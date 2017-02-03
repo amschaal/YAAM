@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>YAAM</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+   	.line {
+	  fill: none;
+	  stroke: #000;
+	  stroke-width: 2px;
+	}
+	.x-line{
+	  fill: none;
+	  stroke: green;
+	}
+	.y-line{
+	  fill: none;
+	  stroke: blue;
+	}
+	.z-line{
+	  fill: none;
+	  stroke: red;
+	}
+    </style>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script src="d3.v4.min.js"></script>
+</head>
+<body >
+<svg width="350" height="400"></svg>
+
+<button onclick='clearWatch()'>Clear Watch</button>
+<button onclick='navigator.app.exitApp()'>Close</button>
+
+<div>Avg Mag: <span id="accelAvgMag"></span></div>
+<div>Mag: <span id="accelMag"></span></div>
+<div>X: <span id="accelX"></span></div>
+<div>Y: <span id="accelY"></span></div>
+<div>Z <span id="accelZ"></span></div>
+
+<script src="viz.js"></script>
+<script type="text/javascript">
+    var gWatchID = null;
+    var gOptions = { frequency: 50 };  
+    // Wait for PhoneGap to load
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function accelUpdate(acceleration) {
+	acceleration.magnitude = Math.sqrt(acceleration.x*acceleration.x+acceleration.y*acceleration.y+acceleration.z*acceleration.z)        
+	data.push(acceleration)
+	document.getElementById('accelAvgMag').innerHTML = d3.mean(data,function(d){return d.magnitude});
+	document.getElementById('accelMag').innerHTML = acceleration.magnitude;	
+	document.getElementById('accelX').innerHTML = acceleration.x;
+        document.getElementById('accelY').innerHTML = acceleration.y;
+        document.getElementById('accelZ').innerHTML = acceleration.z;
+//	console.log('data',data);
+	draw();
+    }
+    function clearWatch() {
+        navigator.accelerometer.clearWatch(gWatchID);
+    }
+
+    //
+    function onDeviceReady() {
+        gWatchID = navigator.accelerometer.watchAcceleration(accelUpdate,
+                function() {
+                    alert("Couldn't watch acceleration");
+                },
+                gOptions);
+    }
+</script>
+</body>
+</html>
